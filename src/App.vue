@@ -1,86 +1,95 @@
 <template>
   <div class="canvas-ground">
     <div class="side-bar">
-      <button @click="addRectangle">Add Box</button>
-      <button @click="addText">Add Text</button>
-      <button @click="addLogo">Add Image/Logo</button>
-      <button @click="logJson">Save</button>
-      <div class="properties">
-        <label>Border Width:</label>
-        <input type="range" v-model="borderWidth" min="0" max="10" step="1">
-        <br>
-        <label>Border Color:</label>
-        <input type="color" v-model="borderColor">
-        <br>
-        <label>Fill Color:</label>
-        <input type="color" v-model="fillColor">
-      </div>
+      <button class='btn btn-dark m-1' @click="addText">Add Text</button>
+      <button class='btn btn-dark m-1' @click="addRectangle">Add Box</button>
+      <!-- <button class='btn btn-dark m-1' @click="addLogo">Add Image/Logo</button>
+      <button class='btn btn-dark m-1' @click="logJson">Save</button> -->
+
 
     </div>
-    <div class="editor" style="border:1px solid black; margin:0 5px;">
+    <div class="editor m-1 p-1 border border-3 border-primary rounded-2">
       <canvas id="canvas"></canvas>
+    </div>
+    <div v-if="textbox" class="propertyControls">
+      <TextController :textbox="textbox"></TextController>
+    </div>
+    <div v-if="rectangle">
+    <RectController :rectangle="rectangle"></RectController>
     </div>
   </div>
 </template>
 <script>
 import { fabric } from 'fabric';
+import TextController from './components/TextControls.vue';
+import RectController from './components/RectControls.vue';
+
 
 export default {
+  components: { TextController, RectController },
+  computed: {
+    textbox: function () {
+      return this.textboxId;
+    },
+    rectangle:function(){
+      return this.rectangleId;
+    }
+  },
   data: function () {
     return {
       canvas: null,
-      rect: null,
-      borderWidth: 0,
-      borderColor: '#000000',
-      fillColor: 'red'
+      selectedObject: null,
+      textObjects: [],
+      rectObjects: [],
+      textboxId: '',
+      rectangleId: '',
+
     }
   },
   mounted: function () {
-    const canvas = new fabric.Canvas('canvas', { backgroundColor: 'black', height: 800, width: 600 });
+    const canvas = new fabric.Canvas('canvas', { backgroundColor: 'white', height: 800, width: 600 });
     this.canvas = canvas;
+
+
+    this.canvas.on('mouse:down', (e) => {
+      this.textboxId = null;
+      this.rectangleId = null;
+      if(e.target.type){}
+      const selected = e.target;
+      this.textboxId = selected;
+      console.log(this.textbox)
+    });
+
     this.canvas.preserveObjectStacking = true;
-    this.canvas.renderAll();
 
-
-  },
-  watch: {
-    borderWidth() {
-      this.updateProperties();
-    },
-    borderColor() {
-      this.updateProperties();
-    },
-    fillColor() {
-      this.updateProperties();
-    }
   },
   methods: {
     addRectangle: function () {
-      const shapeRect = new fabric.Rect({ width: 100, height: 20, fill: this.fillColor,zIndex:1 ,evented:true});;
-      this.canvas.add(shapeRect);
-      this.rect = shapeRect;
-
+      const rectangle = new fabric.Rect({
+        fill: '#06538e',
+        width: 125,
+        height: 125,
+      })
+      this.rectObjects.push(rectangle);
+      this.canvas.add(rectangle);
     },
     addText: function () {
-      var text = new fabric.Text('Argusoft', { left: 100, top: 100, fill: 'white',zIndex:2 });
-      this.canvas.add(text);
-    },
-    addLogo: function () {
-
-    },
-    logJson:function(){
-      const json = this.canvas.toJSON();
-      console.log(json);
-    },
-    updateProperties() {
-      this.rect.set({
-        borderWidth: this.borderWidth,
-        stroke: this.borderColor,
-        fill: this.fillColor
-      });
-      this.canvas.renderAll();
+      const text = new fabric.Textbox('Sample Text', {
+        left: 100,
+        top: 100,
+        fontFamily: 'Arial',
+        fontSize: 24,
+        fill: 'black',
+        backgroundColor: 'transparent',
+        selectable: true,
+        id: 'textObj' + this.textObjects.length
+      })
+      this.textObjects.push(text)
+      this.canvas.add(text)
+      // console.log(this.textObjects);
     }
   }
+
 }
 </script>
 
@@ -96,7 +105,7 @@ export default {
 .side-bar {
   display: flex;
   flex-direction: column;
-  border: 2px solid plum;
+  border: 5px solid plum;
   padding: 10px;
 }
 </style>
