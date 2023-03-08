@@ -1,5 +1,5 @@
 <template>
-    <div class="container d-flex justify-content-center flex-column">
+    <div class="container bg-secondary m-1 mt-2 d-flex justify-content-center flex-column">
         <h2>Rectangle Controls</h2>
         <input type="color" v-model="rectProps.fill" @input="updateRect" />
         <input type="color" v-model="rectProps.stroke" @input="updateRect" />
@@ -13,6 +13,7 @@ import { fabric } from 'fabric';
 export default {
     props: {
         rectangle: '',
+        canvas: ''
     },
     data() {
         return {
@@ -36,6 +37,4 @@ export default {
 };
 </script>
   
-<style scoped>
-
-</style>
+<style scoped></style>

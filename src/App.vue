@@ -3,111 +3,114 @@
     <div class="side-bar">
       <button class='btn btn-dark m-1' @click="addText">Add Text</button>
       <button class='btn btn-dark m-1' @click="addRectangle">Add Box</button>
-      <!-- <button class='btn btn-dark m-1' @click="addLogo">Add Image/Logo</button>
-      <button class='btn btn-dark m-1' @click="logJson">Save</button> -->
-
-
     </div>
-    <div class="editor m-1 p-1 border border-3 border-primary rounded-2">
+    <div class="editor m-1 p-1 ">
       <canvas id="canvas"></canvas>
     </div>
-    <div v-if="textbox" class="propertyControls">
-      <TextController :textbox="textbox"></TextController>
+    <div v-if="textbox">
+      <TextController :canvas="canvas" :textbox="textbox" :key="textboxId.id"></TextController>
     </div>
     <div v-if="rectangle">
-    <RectController :rectangle="rectangle"></RectController>
+      <RectController :canvas="canvas" :rectangle="rectangle" :key="rectangleId.id"></RectController>
     </div>
   </div>
 </template>
+
 <script>
 import { fabric } from 'fabric';
 import TextController from './components/TextControls.vue';
 import RectController from './components/RectControls.vue';
 
-
 export default {
   components: { TextController, RectController },
-  computed: {
-    textbox: function () {
-      return this.textboxId;
-    },
-    rectangle:function(){
-      return this.rectangleId;
-    }
-  },
-  data: function () {
+  data() {
     return {
       canvas: null,
-      selectedObject: null,
       textObjects: [],
       rectObjects: [],
       textboxId: '',
       rectangleId: '',
-
     }
   },
-  mounted: function () {
+  computed: {
+    textbox() {
+      return this.textboxId;
+    },
+    rectangle() {
+      return this.rectangleId;
+    }
+  },
+  mounted() {
     const canvas = new fabric.Canvas('canvas', { backgroundColor: 'white', height: 800, width: 600 });
     this.canvas = canvas;
 
 
     this.canvas.on('mouse:down', (e) => {
+      if (!e.target) {
+        this.textboxId = null;
+        this.rectangleId = null;
+        return;
+      }
+      if (e.target.type === 'rect') {
+        this.textboxId = null;
+        this.rectangleId = e.target;
+      } else if (e.target.type === 'textbox') {
+        this.rectangleId = null;
+        this.textboxId = e.target;
+      }
+    });
+    this.canvas.preserveObjectStacking = true;
+    this.canvas.on('selection:cleared', () => {
       this.textboxId = null;
       this.rectangleId = null;
-      if(e.target.type){}
-      const selected = e.target;
-      this.textboxId = selected;
-      console.log(this.textbox)
     });
-
-    this.canvas.preserveObjectStacking = true;
-
   },
   methods: {
-    addRectangle: function () {
+    addRectangle() {
       const rectangle = new fabric.Rect({
         fill: '#06538e',
         width: 125,
         height: 125,
+        zIndex: 1,
+        id: 'rectObj' + this.rectObjects.length
       })
       this.rectObjects.push(rectangle);
       this.canvas.add(rectangle);
+      console.log(rectangle);
     },
-    addText: function () {
+    addText() {
       const text = new fabric.Textbox('Sample Text', {
-        left: 100,
-        top: 100,
         fontFamily: 'Arial',
         fontSize: 24,
         fill: 'black',
         backgroundColor: 'transparent',
         selectable: true,
+        zIndex: 2,
         id: 'textObj' + this.textObjects.length
       })
       this.textObjects.push(text)
       this.canvas.add(text)
-      // console.log(this.textObjects);
     }
   }
-
 }
 </script>
 
 <style scoped>
 .canvas-ground {
-  margin: auto;
+  margin: 0 20px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
 
 }
 
 .side-bar {
   display: flex;
   flex-direction: column;
-  border: 5px solid plum;
-  padding: 10px;
+  border: 1px solid plum;
+  border-radius: 25px;
+  margin: 5px;
+
+  padding: 20px;
 }
 </style>
-
-

@@ -22,20 +22,23 @@
 import { fabric } from 'fabric';
 
 export default {
+    mounted: function () {
+        this.updateText();
+    },
     props: {
         textbox: '',
-        //   textprops:{}
     },
     data() {
         return {
             textProps: {
                 fill: this.textbox.get('fill'),
                 fontFamily: this.textbox.get('fontFamily'),
-                fontSize: 20,
-                fontWeight: 'normal',
-                fontStyle: 'normal',
-                textDecoration: '',
-                backgroundColor: ''
+                fontSize: this.textbox.get('fontSize'),
+                fontWeight: this.textbox.get('fontWeight'),
+                fontStyle: this.textbox.get('fontStyle'),
+                underline: this.textbox.get('underline'),
+                backgroundColor: this.textbox.get('backgroundColor'),
+                zIndex: 2
             }
         };
     },
@@ -47,8 +50,9 @@ export default {
                 fontSize: parseInt(this.textProps.fontSize),
                 fontWeight: this.textProps.fontWeight,
                 fontStyle: this.textProps.fontStyle,
-                textDecoration: this.textProps.textDecoration,
-                backgroundColor: this.textProps.backgroundColor
+                underline: this.textProps.underline,
+                backgroundColor: this.textProps.backgroundColor,
+                zIndex: this.zIndex
             });
             this.textbox.canvas.renderAll();
         },
@@ -68,7 +72,5 @@ export default {
 };
 </script>
   
-<style scoped>
-
-</style>
+<style scoped></style>
   
