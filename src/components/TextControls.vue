@@ -15,6 +15,7 @@
         </div>
 
         <input type="color" v-model="textProps.backgroundColor" @input="updateText" />
+
     </div>
 </template>
   
@@ -65,9 +66,10 @@ export default {
             this.updateText();
         },
         toggleUnderline() {
-            this.textProps.textDecoration = this.textProps.textDecoration === 'underline' ? false : true;
+            this.textProps.underline = !this.textProps.underline
             this.updateText();
-        }
+        },
+
     }
 };
 </script>
