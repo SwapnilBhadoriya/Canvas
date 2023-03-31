@@ -395,11 +395,16 @@ export default {
             this.canvas.remove(this.activeObject);
         },
         logPrint() {
-            var imgData = this.canvas.toDataURL("image/jpeg", 1.0);
-            var pdf = new jsPDF({ format: [212, 159] });
+            let w = window.open('canvas')
+            w.document.write(this.canvas.toSVG())
+            w.print()
+            w.close()
+            // var imgData = this.canvas.toDataURL("image/jpeg", 1.0);
+            // var imgData = 'data:image/svg+xml;utf8,' + encodeURIComponent(this.canvas.toSVG())
+            // var pdf = new jsPDF({ format: [212, 159] });
 
-            pdf.addImage(imgData, 'JPEG', 0, 0);
-            pdf.save("invoice.pdf");
+            // pdf.addImage(imgData, 'JPEG', 0, 0);
+            // pdf.save("invoice.pdf");
         },
         logJson: function () {
             this.can = false;

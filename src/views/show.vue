@@ -1,7 +1,7 @@
 <template>
     <div>
         <canvas id="canvas1"></canvas>
-        <!-- <button v-on:click="logPrint">Print</button> -->
+        <button v-on:click="logPrint">Print</button>
     </div>
 </template>
 
@@ -20,15 +20,34 @@ export default {
     },
     methods: {
         logPrint() {
-            var imgData = this.canvas.toDataURL("image/jpeg", 1.0);
-            var pdf = new jsPDF({ format: [212, 159] });
+            const stage = this.json
+            var pdf = new jsPDF('l', 'px', [this.json.width, this.json.height]);
+            pdf.setTextColor('#000000');
+            // first add texts
 
-            pdf.addImage(imgData, 'JPEG', 0, 0);
-            pdf.save("invoice.pdf");
+            // this.json.objects.find('Text').forEach((text) => {
+            //     const size = text.fontSize() / 0.75; // convert pixels to points
+            //     pdf.setFontSize(size);
+            //     pdf.text(text.text(), text.x(), text.y(), {
+            //         baseline: 'top',
+            //         angle: -text.getAbsoluteRotation(),
+            //     });
+            // });
+
+            // then put image on top of texts (so texts are not visible)
+            pdf.addImage(
+                stage.toDataURL({ pixelRatio: 2 }),
+                0,
+                0,
+                stage.width(),
+                stage.height()
+            );
+
+            pdf.save('canvas.pdf');
         }
     },
     mounted() {
-        // console.log(this.json.objects)
+        console.log(this.json.objects)
         this.json.objects.forEach(element => {
             return element['selectable'] = false
         });
